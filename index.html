@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Template • TodoMVC</title>
+	<link rel="stylesheet" href="node_modules/todomvc-common/base.css">
+	<link rel="stylesheet" href="node_modules/todomvc-app-css/index.css">
+	<!-- CSS overrides - remove if you don't need it -->
+	<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<section class="todoapp" id="app">
+	<header class="header">
+		<h1>todos</h1>
+		<input
+				@keydown.enter="handleNewTodoKeyDown"
+				class="new-todo" placeholder="What needs to be done?" autofocus>
+	</header>
+
+	<template v-if="todos.length">
+		<section class="main">
+			<input
+					@change="handleToggleAllChange"
+					id="toggle-all" class="toggle-all" type="checkbox">
+			<label for="toggle-all">Mark all as complete</label>
+			<ul class="todo-list">
+				<!--
+              任务项有三种样式状态：
+                未完成：无样式
+                已完成：completed
+                编辑：editing
+             -->
+				<!--
+                  当我双击的时候，我就把 currentEditing = 当前双击的这个任务项
+                  每个任务项 class 的 editing 都有一个判定：如果 currentEditing === 我自己 ，则该任务项就获得 editing 样式
+                 -->
+				<li
+						:class="{
+						completed: item.completed,
+						editing: currentEditing === item
+						}"
+						v-for="(item, index) in todos">
+					<div class="view">
+						<input class="toggle"
+							   v-model="item.completed"
+							   type="checkbox">
+						<label @dblclick="handleGetEditingDblclick(item)">{{ item.title }}</label>
+						<button
+								@click="handleRemoveTodoClick(index)"
+								class="destroy"></button>
+					</div>
+					<!--由于我们还有一个取消编辑不保存的功能，所以我们这里就不使用双向数据绑定-->
+					<input
+							@keydown.enter="handleSaveEditKeyDown(item,index,$event)"
+							@blur="handleSaveEditKeyDown(item,index,$event)"
+							@keydown.esc="handleCancelEditEsc"
+							class="edit" :value="item.title">
+				</li>
+			</ul>
+		</section>
+
+		<footer class="footer">
+
+			<span class="todo-count"><strong>0</strong> item left</span>
+
+			<ul class="filters">
+				<li>
+					<a class="selected" href="#/">All</a>
+				</li>
+				<li>
+					<a href="#/active">Active</a>
+				</li>
+				<li>
+					<a href="#/completed">Completed</a>
+				</li>
+			</ul>
+
+			<button
+					@click="handleClearAllDoneClick"
+					v-if="todos.some(item => item.completed)"
+					class="clear-completed">Clear completed</button>
+		</footer>
+	</template>
+</section>
+<footer class="info">
+	<p>Double-click to edit a todo</p>
+	<!-- Remove the below line ↓ -->
+	<p>Template by <a href="http://sindresorhus.com">Sindre Sorhus</a></p>
+	<!-- Change this out with your name and url ↓ -->
+	<p>Created by <a href="http://todomvc.com">you</a></p>
+	<p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+</footer>
+
+<!--<script src="node_modules/todomvc-common/base.js"></script>-->
+<script src="node_modules/vue/dist/vue.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
